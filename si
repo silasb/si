@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+export SI_ROOT=${SI_ROOT:="/home/si"}
+export PLUGIN_PATH=${PLUGIN_PATH:="/var/lib/si/plugins"}
+
+[[ -f $SI_ROOT/sirc ]] && source $SI_ROOT/sirc
+
+[[ $SI_TRACE ]] && set -x
+
+case "$1" in
+  help)
+    cat<<EOF | pluginhook commands help | sort
+    help            Print the list of commands
+EOF
+    ;;
+
+  *)
+    for script in $(ls -d $PLUGIN_PATH/*/commands); do
+      $script "$@"
+    done
+    ;;
+
+esac
